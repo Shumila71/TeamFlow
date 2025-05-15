@@ -6,6 +6,7 @@ import ChatPage from "./pages/ChatPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./styles/main.css";
+import "./styles/chat.css";
 
 function App() {
   return (

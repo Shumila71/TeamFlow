@@ -1,5 +1,9 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // или твой продакшн URL
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
+
+const socket = io(SOCKET_URL, {
+  autoConnect: false, // подключаем вручную, чтобы контролировать
+});
 
 export default socket;
