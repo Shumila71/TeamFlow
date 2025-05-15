@@ -23,7 +23,7 @@ export default function LoginForm() {
       if (!res.ok) throw new Error(data.error || "Ошибка при входе");
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("userId", data.id);
 
       navigate("/");
     } catch (err) {

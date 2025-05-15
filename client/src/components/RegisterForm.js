@@ -24,7 +24,7 @@ export default function RegisterForm() {
 
       // Автовход после регистрации
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("userId", data.id);
 
       navigate("/");
     } catch (err) {

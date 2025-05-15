@@ -13,7 +13,11 @@ const register = async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: "Username already exists" });
+    if (err.code === '23505') { // уникальный ключ - username уже существует
+      res.status(400).json({ error: "Username already exists" });
+    } else {
+      res.status(500).json({ error: "Server error" });
+    }
   }
 };
 
@@ -22,10 +26,15 @@ const login = async (req, res) => {
   try {
     const userRes = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
     const user = userRes.rows[0];
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
     res.json({ token, username: user.username, userId: user.id });
