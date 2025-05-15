@@ -1,0 +1,20 @@
+const { pool } = require("../db");
+
+module.exports = (requiredRole) => {
+  return async (req, res, next) => {
+    const userId = req.user.userId;
+    const chatId = req.body.chatId;
+
+    const result = await pool.query(
+      "SELECT role FROM chat_users WHERE chat_id = $1 AND user_id = $2",
+      [chatId, userId]
+    );
+
+    const userRole = result.rows[0]?.role;
+    if (!userRole || (requiredRole === "admin" && userRole !== "admin")) {
+      return res.status(403).json({ message: "Недостаточно прав" });
+    }
+
+    next();
+  };
+};
