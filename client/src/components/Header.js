@@ -11,11 +11,8 @@ export default function Header() {
   };
 
   return (
-    <header style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+    <header style={{ padding: "10px"}}>
       <nav>
-        <Link to="/" style={{ marginRight: "15px" }}>
-          Главная
-        </Link>
         {!token && (
           <>
             <Link to="/login" style={{ marginRight: "15px" }}>

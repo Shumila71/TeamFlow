@@ -24,7 +24,7 @@ export default function RegisterForm() {
 
       // Автовход после регистрации
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.id);
+      localStorage.setItem("userId", data.userId);
 
       navigate("/");
     } catch (err) {
@@ -37,7 +37,7 @@ export default function RegisterForm() {
       <h2>Регистрация</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <div>
-        <label>Имя пользователя:</label>
+        <label>Придумайте логин (уникальный):</label>
         <input
           type="text"
           value={username}
@@ -53,7 +53,7 @@ export default function RegisterForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={6}
+          minLength={3}
         />
       </div>
       <button type="submit">Зарегистрироваться</button>

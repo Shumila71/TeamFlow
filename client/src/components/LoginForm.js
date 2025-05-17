@@ -19,11 +19,11 @@ export default function LoginForm() {
       });
 
       const data = await res.json();
-
+      console.log("Login response data:", data);
       if (!res.ok) throw new Error(data.error || "Ошибка при входе");
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.id);
+      localStorage.setItem("userId", data.userId);
 
       navigate("/");
     } catch (err) {

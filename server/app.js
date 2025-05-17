@@ -4,6 +4,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
+const { pool } = require("./db");
 const io = new Server(server, {
   cors: { origin: "*" }
 });
@@ -12,6 +13,8 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+
+
 const { initDB } = require("./db");
 const Message = require("./models/Message");
 
@@ -25,6 +28,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
+
+
 
 io.on("connection", (socket) => {
   console.log("Новый пользователь подключился:", socket.id);
@@ -40,8 +45,13 @@ io.on("connection", (socket) => {
       // Сохраняем сообщение в БД
       const savedMessage = await Message.send(chatId, senderId, text, replyTo);
 
+      const userRes = await pool.query("SELECT username FROM users WHERE id = $1", [senderId]);
+      const username = userRes.rows[0]?.username || "Unknown";
+
+      const messageWithUser = { ...savedMessage, username };
+
       // Рассылаем новое сообщение с ID и временем всем в комнате
-      io.to(`chat_${chatId}`).emit("newMessage", savedMessage);
+      io.to(`chat_${chatId}`).emit("newMessage", messageWithUser);
     } catch (err) {
       console.error("Ошибка при сохранении сообщения:", err);
       socket.emit("errorMessage", "Ошибка при отправке сообщения");

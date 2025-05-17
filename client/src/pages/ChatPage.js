@@ -1,32 +1,30 @@
-import ChatWindow from "../components/ChatWindow";
-import ChatList from "../components/ChatList";
-import { useParams, Navigate } from "react-router-dom";
-import React from "react";
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ChatListPage from "../components/ChatListPage";
+import ChatDetailsPage from "../components/ChatDetailsPage";
 
 export default function ChatPage() {
   const { chatId } = useParams();
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
 
-  if (!token || !userId) {
-    return <Navigate to="/login" />;
+  useEffect(() => {
+    // Проверяем авторизацию при монтировании компонента
+    if (!token) {
+      navigate("/login"); // Редирект на страницу входа
+    }
+  }, [token, navigate]);
+
+  // Если пользователь не авторизован, показываем null (редирект уже сработает)
+  if (!token) {
+    return null;
   }
 
-  return (
-    <div style={{ display: "flex", gap: "20px" }}>
-      <div style={{ flex: 1 }}>
-        <ChatList />
-      </div>
-      <div style={{ flex: 3 }}>
-        {chatId ? (
-          <>
-            <h2>Чат №{chatId}</h2>
-            <ChatWindow chatId={chatId} userId={userId} token={token} />
-          </>
-        ) : (
-          <p>Выберите чат слева</p>
-        )}
-      </div>
-    </div>
-  );
+  // Если выбран конкретный чат — показываем детали
+  if (chatId) {
+    return <ChatDetailsPage chatId={chatId} />;
+  }
+
+  // Иначе — просто список чатов
+  return <ChatListPage />;
 }

@@ -11,7 +11,18 @@ const Message = {
 
   async getChatMessages(chatId) {
     const result = await pool.query(
-      "SELECT * FROM messages WHERE chat_id = $1 ORDER BY created_at ASC",
+      `SELECT 
+         m.id,
+         m.chat_id,
+         m.sender_id,
+         m.text,
+         m.reply_to,
+         m.created_at AS timestamp,
+         u.username
+       FROM messages m
+       JOIN users u ON m.sender_id = u.id
+       WHERE m.chat_id = $1
+       ORDER BY m.created_at ASC`,
       [chatId]
     );
     return result.rows;

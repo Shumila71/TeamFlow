@@ -1,11 +1,17 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const auth = require("../middleware/authMiddleware");
-const checkRole = require("../middleware/roleMiddleware");
-const chatController = require("../controllers/chatController");
+const auth = require('../middleware/authMiddleware');
+const checkRole = require('../middleware/roleMiddleware');
+const chatController = require('../controllers/chatController');
 
+router.get("/:chatId/users", auth, chatController.getChatUsers);
+router.get("/", auth, chatController.getUserChats);
+router.post("/", auth, chatController.createChat);
 router.post("/create", auth, chatController.createChat);
 router.post("/add-user", auth, checkRole("admin"), chatController.addUserToChat);
-router.post("/set-tag", auth, checkRole("admin"), chatController.setPositionTag);
+router.post("/:chatId/assign-role", auth, chatController.assignRole);
+router.post("/:chatId/assign-position-tag", auth, chatController.assignPositionTag);
+
+
 
 module.exports = router;

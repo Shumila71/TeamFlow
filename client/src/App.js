@@ -14,9 +14,10 @@ function App() {
       <Header />
       <div className="app">
         <Routes>
-          <Route path="/" element={<ChatPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<ChatPage />} />
+          <Route path="/:chatId" element={<ChatPage />} />
         </Routes>
       </div>
       <Footer />
