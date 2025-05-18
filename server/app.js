@@ -6,11 +6,12 @@ const app = express();
 const server = http.createServer(app);
 const { pool } = require("./db");
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: {
+    origin: "https://app.example.com",
+  }
 });
 
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
@@ -25,7 +26,6 @@ app.use(express.json());
 initDB();
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
