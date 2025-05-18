@@ -74,8 +74,9 @@ export default function ChatDetailsPage({ chatId }) {
         style={{
           paddingRight: "15px",
           height: "100%",
-          maxWidth:"25%",
+          maxWidth:"30%",
           overflowY: "auto",
+          minWidth:"25%"
         }}
       >
         <UserManagement chatId={chatId} />

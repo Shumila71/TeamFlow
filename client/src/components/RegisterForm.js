@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/auth.css"; 
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -25,6 +26,7 @@ export default function RegisterForm() {
       // Автовход после регистрации
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.username);
 
       navigate("/");
     } catch (err) {
@@ -33,30 +35,34 @@ export default function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Регистрация</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <div>
-        <label>Придумайте логин (уникальный):</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          autoFocus
-        />
-      </div>
-      <div>
-        <label>Пароль:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={3}
-        />
-      </div>
-      <button type="submit">Зарегистрироваться</button>
-    </form>
+    <div className="auth-form-container">
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <h2 className="auth-title">Регистрация</h2>
+        {error && <p className="auth-error">{error}</p>}
+        <div className="auth-input-group">
+          <label className="auth-label">Придумайте логин (уникальный):</label>
+          <input
+            type="text"
+            className="auth-input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            autoFocus
+          />
+        </div>
+        <div className="auth-input-group">
+          <label className="auth-label">Пароль:</label>
+          <input
+            type="password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={3}
+          />
+        </div>
+        <button className="auth-button" type="submit">Зарегистрироваться</button>
+      </form>
+    </div>
   );
 }

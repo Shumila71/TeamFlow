@@ -12,29 +12,6 @@
   overflow: hidden;
 }
 
-/* Левая панель со списком чатов */
-
-.chat-list {
-  flex: 1;
-  border-right: 1px solid #ddd;
-  overflow-y: auto;
-  background-color: #fafafa;
-}
-
-/* Каждый чат в списке */
-
-.chat-list-item {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.chat-list-item:hover, .chat-list-item.active {
-  background-color: #e6f0ff;
-  font-weight: 600;
-}
-
 /* Окно сообщений */
 
 .chat-window {

@@ -178,3 +178,65 @@ exports.getUserChats = async (req, res) => {
     res.status(500).json({ error: 'Ошибка при получении чатов пользователя' });
   }
 };
+
+// Удаление чата (только админ)
+exports.deleteChat = async (req, res) => {
+  const chatId = req.params.chatId;
+  const userId = req.user.userId;
+
+  try {
+    const isAdmin = await isUserAdmin(chatId, userId);
+    if (!isAdmin) return res.status(403).json({ error: "Недостаточно прав" });
+
+    await pool.query("DELETE FROM chat_users WHERE chat_id = $1", [chatId]);
+    await pool.query("DELETE FROM messages WHERE chat_id = $1", [chatId]);
+    await pool.query("DELETE FROM chats WHERE id = $1", [chatId]);
+
+    res.json({ message: "Чат удалён" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Ошибка при удалении чата" });
+  }
+};
+
+// Удаление пользователя из чата (только админ)
+exports.removeUserFromChat = async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { chatId, userId } = req.params;
+
+  try {
+    const isAdmin = await isUserAdmin(chatId, currentUserId);
+    if (!isAdmin) return res.status(403).json({ error: "Недостаточно прав" });
+
+    await pool.query(
+      "DELETE FROM chat_users WHERE chat_id = $1 AND user_id = $2",
+      [chatId, userId]
+    );
+
+    res.json({ message: "Пользователь удалён из чата" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Ошибка при удалении пользователя из чата" });
+  }
+};
+
+// Снятие роли администратора (только админ)
+exports.revokeAdmin = async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { chatId, userId } = req.params;
+
+  try {
+    const isAdmin = await isUserAdmin(chatId, currentUserId);
+    if (!isAdmin) return res.status(403).json({ error: "Недостаточно прав" });
+
+    await pool.query(
+      "UPDATE chat_users SET role = 'member' WHERE chat_id = $1 AND user_id = $2",
+      [chatId, userId]
+    );
+
+    res.json({ message: "Роль администратора снята" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Ошибка при снятии прав администратора" });
+  }
+};

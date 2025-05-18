@@ -1,6 +1,5 @@
 /* Контейнер управления пользователями */
 .user-management-container {
-  max-width:max-content;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
@@ -72,13 +71,13 @@
 
 /* Кнопки и управление */
 .user-actions {
+  height: 25px;
   display: flex;
-  align-items: center;
   gap: 10px;
   align-self: center;
 }
 
-.make-admin-btn {
+.make-admin-btn .remove-user-btn{
   padding: 6px 12px;
   background: #3498db;
   color: white;
@@ -86,6 +85,14 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
+}
+
+.revoke-admin-btn{
+  background: #972530 !important;
+}
+
+.remove-user-btn{
+  background: #dc3545 !important;
 }
 
 .make-admin-btn:hover {

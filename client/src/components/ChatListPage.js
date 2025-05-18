@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "../styles/chatList.css";
 
 export default function ChatListPage() {
   const [chats, setChats] = useState([]);
@@ -7,6 +8,8 @@ export default function ChatListPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
+  const userId = Number(localStorage.getItem("userId"));
+  
 
   useEffect(() => {
     fetch("/api/chats", {
@@ -46,25 +49,54 @@ export default function ChatListPage() {
     }
   };
 
-  return (
-    <div>
-      <h2>Список чатов</h2>
+  const handleDelete = async (chatId) => {
+    try {
+      const res = await fetch(`/api/chats/${chatId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      <input
-        value={newChatName}
-        onChange={(e) => setNewChatName(e.target.value)}
-        placeholder="Название нового чата"
-      />
-      <button onClick={createChat}>Создать чат</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      if (!res.ok) throw new Error("Ошибка при удалении");
+
+      setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  return (
+    <div className="chat-list-container">
+      <h2>Список ваших чатов</h2>
+
+      <div className="chat-create">
+        <input
+          value={newChatName}
+          onChange={(e) => setNewChatName(e.target.value)}
+          placeholder="Название нового чата"
+        />
+        <button onClick={createChat}>Создать чат</button>
+      </div>
+      {error && <p className="error-msg">{error}</p>}
 
       {loading ? (
         <p>Загрузка...</p>
       ) : (
-        <ul>
+        <ul className="chat-list">
           {chats.map((chat) => (
-            <li key={chat.id}>
-              <Link to={`/${chat.id}`}>{chat.name}</Link>
+            <li key={chat.id} className="chat-card">
+              <span className="chat-name">{chat.name}</span>
+              <div className="chat-actions">
+                <Link to={`/${chat.id}`}>
+                  <button className="enter-btn">Войти</button>
+                </Link>
+                {chat.creator_id === userId && (
+                  <button className="delete-btn" onClick={() => handleDelete(chat.id)}>
+                    Удалить
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
