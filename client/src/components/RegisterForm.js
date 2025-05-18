@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from '../config';
 import "../styles/auth.css"; 
 
 export default function RegisterForm() {
@@ -13,7 +14,7 @@ export default function RegisterForm() {
     setError(null);
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -23,7 +24,7 @@ export default function RegisterForm() {
 
       if (!res.ok) throw new Error(data.error || "Ошибка регистрации");
 
-      // Автовход после регистрации
+      //заходим сразу после регистрации
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.userId);
       localStorage.setItem("username", data.username);

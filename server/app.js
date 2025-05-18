@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const { pool } = require("./db");
 const io = new Server(server, {
   cors: {
-    origin: "https://app.example.com",
+    origin: "https://teamflow-frontend.onrender.com",
   }
 });
 
@@ -29,7 +29,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
-
+app.use(cors({
+ origin: "https://teamflow-frontend.onrender.com",
+ credentials: true,
+ methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"]
+}));
 
 io.on("connection", (socket) => {
   console.log("Новый пользователь подключился:", socket.id);
@@ -42,15 +46,26 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (data) => {
     const { chatId, senderId, text, replyTo } = data;
     try {
-      // Сохраняем сообщение в БД
+      // запишем в бд
       const savedMessage = await Message.send(chatId, senderId, text, replyTo);
 
-      const userRes = await pool.query("SELECT username FROM users WHERE id = $1", [senderId]);
-      const username = userRes.rows[0]?.username || "Unknown";
+      const userRes = await pool.query(
+      `SELECT 
+          u.username,
+          cu.position_tag 
+        FROM users u
+        JOIN chat_users cu ON u.id = cu.user_id
+        WHERE u.id = $1 AND cu.chat_id = $2`,
+        [senderId, chatId]
+      );
+      
+      const messageWithUser = { 
+        ...savedMessage, 
+        username: userRes.rows[0]?.username || "Unknown",
+        position_tag: userRes.rows[0]?.position_tag  
+      };
 
-      const messageWithUser = { ...savedMessage, username };
-
-      // Рассылаем новое сообщение с ID и временем всем в комнате
+      // рассылаем новое сообщение всем в комнате
       io.to(`chat_${chatId}`).emit("newMessage", messageWithUser);
     } catch (err) {
       console.error("Ошибка при сохранении сообщения:", err);
